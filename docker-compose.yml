@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: stored-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stored
+      POSTGRES_PASSWORD: stored_dev_password
+      POSTGRES_DB: stored_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stored -d stored_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stored-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  stored-network:
+    driver: bridge

@@ -1,7 +1,7 @@
 # Plan de Développement - Gestion de Stock Multi-Entrepôts
 
 > Mis à jour le: 2025-10-08
-> Statut global: 🟡 **Phase 1 - Configuration Initiale** (10%)
+> Statut global: 🟢 **Phase 2 Complétée** - Prêt pour Phase 3 (Authentification) (14%)
 
 ---
 
@@ -52,6 +52,7 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ### ✅ Complété
 
+**Phase 1: Configuration Initiale (100%)**
 - [x] Projet Next.js 15.5.4 initialisé
 - [x] Configuration Tailwind CSS v4
 - [x] Configuration TypeScript strict
@@ -61,6 +62,24 @@ Application web de gestion de stock multi-entrepôts permettant:
 - [x] Design system de base (OKLCH colors, theme tokens)
 - [x] Documentation CLAUDE.md créée
 - [x] Architecture plan documenté
+- [x] **Dépendances installées** (Prisma 6.17.0, Better Auth 1.3.27, Next Safe Action 8.0.11, Zustand 5.0.8, Nuqs 2.7.1, Date-fns 4.1.0, Sonner 2.0.7)
+- [x] **Shadcn UI composants** (30+ composants dont select, textarea, tabs, switch, sonner)
+- [x] **Structure de dossiers complète** (lib/{actions,auth,db,stores,validations,types}, components/{providers,shared}, app/{(auth),(dashboard)})
+- [x] **Configuration environnement** (.env et .env.example créés)
+- [x] **Build validation** (TypeScript + ESLint passés)
+
+**Phase 2: Base de Données (100%)**
+- [x] **Docker PostgreSQL** (PostgreSQL 16 containerisé sur port 5433)
+- [x] **Schéma Prisma complet** (9 modèles: User, Warehouse, WarehouseAccess, Category, Product, ProductVariant, ProductAttribute, Stock, Movement)
+- [x] **Enums** (UserRole: 5 rôles, MovementType: 4 types)
+- [x] **Relations et contraintes** (25+ index, cascade deletes, foreign keys, unique constraints)
+- [x] **Client Prisma singleton** (lib/db/client.ts avec pattern singleton)
+- [x] **Script de seed** (admin, 3 catégories, 1 warehouse, 3 produits avec variantes, stock initial)
+- [x] **Scripts npm DB** (db:generate, db:push, db:migrate, db:studio, db:seed, db:reset)
+- [x] **tsx installé** (4.20.6 pour exécution TypeScript)
+- [x] **Migrations exécutées** (9 tables créées avec succès)
+- [x] **Seed exécuté** (données de test insérées)
+- [x] **Build validation** (TypeScript + ESLint passés)
 
 ### 🔄 En Cours
 
@@ -68,15 +87,18 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ### ⏳ Prochaines Étapes Immédiates
 
-1. Installation des dépendances principales (Prisma, Better Auth, Zod, etc.)
-2. Configuration Shadcn UI
-3. Initialisation de la base de données PostgreSQL
+**Phase 3: Authentification et Sécurité**
+1. Configurer Better Auth avec adapter Prisma
+2. Créer routes API auth (/api/auth/[...all]/route.ts)
+3. Implémenter middleware de protection
+4. Créer système de permissions granulaire
+5. Créer pages de login et layout auth
 
 ---
 
 ## Phases de Développement
 
-### 📋 Phase 1: Configuration Initiale (10% complété)
+### ✅ Phase 1: Configuration Initiale (100% complété)
 
 **Objectif**: Préparer l'environnement de développement complet
 
@@ -85,70 +107,78 @@ Application web de gestion de stock multi-entrepôts permettant:
 - [x] 1.1 Créer le projet Next.js 15
 - [x] 1.2 Configurer Tailwind CSS v4
 - [x] 1.3 Configurer TypeScript
-- [ ] 1.4 Installer les dépendances principales
-  - [ ] Prisma + @prisma/client
-  - [ ] Better Auth
-  - [ ] Zod + Next Safe Action
-  - [ ] Zustand + Nuqs
-  - [ ] Lucide React (déjà installé ✓)
-  - [ ] Date-fns, Sonner (toasts)
-- [ ] 1.5 Configurer Shadcn UI
-  - [ ] Initialiser: `npx shadcn@latest init`
-  - [ ] Installer composants de base (button, card, dialog, form, input, etc.)
-- [ ] 1.6 Créer la structure de dossiers
-  - [ ] `lib/` (actions, auth, db, stores, validations, utils, types)
-  - [ ] `components/` (ui, providers, shared)
-  - [ ] `app/(auth)/` et `app/(dashboard)/`
-- [ ] 1.7 Configuration environnement
-  - [ ] Créer `.env` et `.env.example`
-  - [ ] Configurer les variables d'environnement
+- [x] 1.4 Installer les dépendances principales
+  - [x] Prisma 6.17.0 + @prisma/client
+  - [x] Better Auth 1.3.27
+  - [x] Zod 4.1.12 + Next Safe Action 8.0.11
+  - [x] Zustand 5.0.8 + Nuqs 2.7.1
+  - [x] Lucide React 0.545.0 (déjà installé ✓)
+  - [x] Date-fns 4.1.0, Sonner 2.0.7
+- [x] 1.5 Configurer Shadcn UI
+  - [x] Initialiser: `npx shadcn@latest init` (style: new-york, RSC enabled)
+  - [x] Installer composants de base (30+ composants dont select, textarea, tabs, switch, sonner)
+- [x] 1.6 Créer la structure de dossiers
+  - [x] `lib/` (actions, auth, db, stores, validations, utils, types)
+  - [x] `components/` (ui, providers, shared)
+  - [x] `app/(auth)/` et `app/(dashboard)/`
+- [x] 1.7 Configuration environnement
+  - [x] Créer `.env` et `.env.example`
+  - [x] Configurer les variables d'environnement (DATABASE_URL, BETTER_AUTH_SECRET, BETTER_AUTH_URL)
 
 **Critères de Validation**:
 
 - ✅ Tous les packages installés sans erreur
 - ✅ Structure de dossiers créée selon l'architecture
 - ✅ Variables d'environnement configurées
+- ✅ Build TypeScript passe (compiled in 2.6s)
+- ✅ ESLint passe sans erreur
+- ✅ Commit créé: `7357b33 feat: complete Phase 1 - Initial setup and project structure`
 
 ---
 
-### 🗄️ Phase 2: Base de Données (0% complété)
+### ✅ Phase 2: Base de Données (100% complété)
 
 **Objectif**: Mettre en place PostgreSQL et le schéma Prisma complet
 
 #### Étapes
 
-- [ ] 2.1 Initialiser Prisma
-  - [ ] `npx prisma init`
-  - [ ] Configurer DATABASE_URL
-- [ ] 2.2 Créer le schéma Prisma complet
-  - [ ] Modèles: User, Warehouse, WarehouseAccess
-  - [ ] Modèles: Category, Product, ProductVariant, ProductAttribute
-  - [ ] Modèles: Stock, Movement
-  - [ ] Enums: UserRole, MovementType
-  - [ ] Relations et contraintes d'intégrité
-  - [ ] Index pour optimisation
-- [ ] 2.3 Générer le client Prisma
-  - [ ] `npx prisma generate`
-- [ ] 2.4 Créer la base de données
-  - [ ] PostgreSQL locale ou Docker
-  - [ ] Exécuter migrations: `npx prisma migrate dev --name init`
-- [ ] 2.5 Créer le script de seed
-  - [ ] `prisma/seed.ts`
-  - [ ] Admin par défaut
-  - [ ] Catégories exemples
-  - [ ] Entrepôt et produit exemple
-- [ ] 2.6 Exécuter le seed
-  - [ ] `npm run db:seed`
-- [ ] 2.7 Configurer le client Prisma
-  - [ ] `lib/db/client.ts`
-  - [ ] Singleton pattern pour éviter les reconnexions
+- [x] 2.1 Initialiser Prisma
+  - [x] `npx prisma init --datasource-provider postgresql`
+  - [x] Configurer DATABASE_URL (port 5433 pour éviter conflits)
+- [x] 2.2 Créer le schéma Prisma complet
+  - [x] Modèles: User, Warehouse, WarehouseAccess
+  - [x] Modèles: Category, Product, ProductVariant, ProductAttribute
+  - [x] Modèles: Stock, Movement
+  - [x] Enums: UserRole (5 rôles), MovementType (4 types)
+  - [x] Relations et contraintes d'intégrité (cascade deletes, foreign keys)
+  - [x] Index pour optimisation (25+ index)
+- [x] 2.3 Générer le client Prisma
+  - [x] `npx prisma generate` (v6.17.0)
+- [x] 2.4 Créer la base de données
+  - [x] **Docker PostgreSQL 16** (docker-compose.yml sur port 5433)
+  - [x] Exécuter migrations: `npx prisma db push`
+- [x] 2.5 Créer le script de seed
+  - [x] `prisma/seed.ts` avec tsx
+  - [x] Admin par défaut (admin@example.com)
+  - [x] 3 catégories hiérarchiques (Électronique > Ordinateurs)
+  - [x] 1 entrepôt (WH-MAIN) avec accès admin
+  - [x] 3 produits avec variantes et attributs
+  - [x] Stock initial (4 entrées)
+- [x] 2.6 Exécuter le seed
+  - [x] `npm run db:seed` (succès)
+- [x] 2.7 Configurer le client Prisma
+  - [x] `lib/db/client.ts`
+  - [x] Singleton pattern avec support HMR
 
 **Critères de Validation**:
 
-- ✅ Base de données créée avec toutes les tables
-- ✅ Seed exécuté avec succès
+- ✅ Base de données créée avec toutes les tables (9 modèles)
+- ✅ Seed exécuté avec succès (admin, 3 catégories, 1 warehouse, 3 produits)
 - ✅ Prisma Studio fonctionne: `npm run db:studio`
-- ✅ Données de test présentes (admin, 1 warehouse, quelques produits)
+- ✅ Données de test présentes et vérifiées
+- ✅ Build TypeScript passe (compiled in 2.7s)
+- ✅ ESLint passe sans erreur
+- ✅ Commit créé: `9d62225 feat: complete Phase 2 - Database setup with Docker PostgreSQL`
 
 ---
 
@@ -803,13 +833,37 @@ Aucun blocage actuellement.
 
 ## Notes de Progression
 
-### 2025-10-08 - Initialisation du projet
+### 2025-10-08 - Phases 1 et 2 Complétées ✅
 
+**Phase 1 - Configuration Initiale (matin)**
 - ✅ Projet Next.js 15 créé
 - ✅ Tailwind v4 configuré
 - ✅ Documentation CLAUDE.md créée
 - ✅ Plan de développement créé
-- ⏳ Prochaine étape: Installation des dépendances
+
+**Phase 1 - Configuration complète (après-midi)**
+- ✅ Branche `feature/phase-1-setup` créée
+- ✅ Installation de toutes les dépendances (Prisma, Better Auth, Zustand, Nuqs, Next Safe Action, Date-fns, Sonner)
+- ✅ Configuration Shadcn UI avec 30+ composants
+- ✅ Structure de dossiers complète (lib/, components/, app/)
+- ✅ Fichiers d'environnement (.env, .env.example)
+- ✅ Validation build TypeScript et ESLint
+- ✅ Commit `7357b33` avec 19 fichiers modifiés, 1387 insertions
+- 🎯 **Phase 1 complète à 100%**
+
+**Phase 2 - Base de Données (fin d'après-midi)**
+- ✅ Docker PostgreSQL 16 containerisé sur port 5433
+- ✅ Schéma Prisma complet (9 modèles, 2 enums, 25+ index)
+- ✅ Client Prisma singleton avec pattern optimal
+- ✅ Script de seed avec données de test complètes
+- ✅ Scripts npm pour gestion DB (generate, push, migrate, studio, seed, reset)
+- ✅ tsx installé pour exécution TypeScript
+- ✅ Migrations exécutées avec succès (9 tables créées)
+- ✅ Seed exécuté (1 admin, 3 catégories, 1 warehouse, 3 produits)
+- ✅ Validation build TypeScript et ESLint
+- ✅ Commit `9d62225` avec 9 fichiers modifiés, 1181 insertions
+- 🎯 **Phase 2 complète à 100%**
+- ⏳ Prochaine étape: Phase 3 - Authentification et Sécurité (Better Auth)
 
 ---
 
@@ -817,13 +871,17 @@ Aucun blocage actuellement.
 
 | Métrique | Valeur Actuelle | Objectif |
 |----------|-----------------|----------|
-| **Progression Globale** | 10% | 100% |
-| **Phases Complétées** | 0/14 | 14/14 |
+| **Progression Globale** | 14% | 100% |
+| **Phases Complétées** | 2/14 ✅ | 14/14 |
 | **Tests Écrits** | 0 | TBD |
 | **Couverture Code** | 0% | >80% |
 | **Pages Créées** | 1 (home) | ~30 |
-| **Composants Créés** | 0 | ~60 |
+| **Composants UI** | 30+ (Shadcn) | ~60 |
 | **Server Actions** | 0 | ~25 |
+| **Dépendances Installées** | 15+ packages | Complet ✅ |
+| **Modèles Database** | 9 modèles ✅ | 9 modèles |
+| **Tables Database** | 9 tables ✅ | 9 tables |
+| **Scripts npm DB** | 6 scripts ✅ | 6 scripts |
 
 ---
 
