@@ -1,7 +1,7 @@
 # Plan de Développement - Gestion de Stock Multi-Entrepôts
 
 > Mis à jour le: 2025-10-08
-> Statut global: 🟢 **Phase 5 Complétée** - Prêt pour Phase 6 (Routes API et Hooks) (43%)
+> Statut global: 🟢 **Phase 6 Complétée** - Prêt pour Phase 7 (Gestion des Produits) (60%)
 
 ---
 
@@ -372,52 +372,53 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ---
 
-### 🎨 Phase 6: Interface Utilisateur - Composants Partagés (0% complété)
+### 🎨 Phase 6: Interface Utilisateur - Composants Partagés ✅ (100% complété)
 
 **Objectif**: Créer les composants UI réutilisables et le layout
 
 #### Étapes
 
-- [ ] 6.1 Configurer les composants Shadcn UI
-  - [ ] Tous les composants installés
-  - [ ] Thème personnalisé (si nécessaire)
-- [ ] 6.2 Créer les Providers
-  - [ ] `components/providers/auth-provider.tsx`
-  - [ ] `components/providers/toast-provider.tsx` (Sonner)
-  - [ ] `components/providers/theme-provider.tsx`
-- [ ] 6.3 Créer les composants partagés
-  - [ ] `components/shared/page-header.tsx`
-  - [ ] `components/shared/permission-guard.tsx`
-  - [ ] `components/shared/loading-state.tsx`
-  - [ ] `components/shared/error-boundary.tsx`
-  - [ ] `components/shared/empty-state.tsx`
-  - [ ] `components/shared/data-table.tsx` (table réutilisable)
-- [ ] 6.4 Créer la navigation
-  - [ ] `components/shared/navbar.tsx`
-  - [ ] `components/shared/sidebar.tsx`
-  - [ ] `components/shared/user-menu.tsx`
-- [ ] 6.5 Créer le layout dashboard
-  - [ ] `app/(dashboard)/layout.tsx`
-  - [ ] Sidebar avec navigation
-  - [ ] Navbar avec user menu
-  - [ ] Responsive design
-- [ ] 6.6 Créer les stores Zustand
-  - [ ] `lib/stores/use-ui-store.ts` (sidebar, theme)
-  - [ ] `lib/stores/use-warehouse-store.ts`
-  - [ ] `lib/stores/use-product-store.ts`
-- [ ] 6.7 Créer les utilitaires
-  - [ ] `lib/utils/constants.ts`
-  - [ ] `lib/utils/helpers.ts`
-  - [ ] `lib/utils/formatters.ts`
-  - [ ] `lib/utils/cn.ts` (déjà fourni par Shadcn)
+- [x] 6.1 Configurer les composants Shadcn UI
+  - [x] 7 composants installés (Sidebar, Breadcrumb, Tooltip, Sheet, Empty, Navigation-menu, use-mobile)
+  - [x] Style "new-york" avec RSC activé
+- [x] 6.2 Créer les Providers
+  - [x] `components/providers/theme-provider.tsx` (next-themes wrapper)
+  - [x] Toaster intégré dans root layout (Sonner)
+- [x] 6.3 Créer les composants partagés
+  - [x] `components/shared/page-header.tsx`
+  - [x] `components/shared/permission-guard.tsx`
+  - [x] `components/shared/loading-state.tsx` (3 variants: spinner/skeleton/inline)
+  - [x] `components/shared/error-boundary.tsx`
+  - [x] `components/shared/empty-state.tsx`
+  - [x] `components/shared/data-table.tsx` (table générique avec sorting/pagination)
+- [x] 6.4 Créer la navigation
+  - [x] `components/shared/navigation/navbar.tsx` (avec breadcrumb)
+  - [x] `components/shared/navigation/app-sidebar.tsx` (filtrage par permissions)
+  - [x] `components/shared/navigation/user-menu.tsx` (avec theme switcher)
+- [x] 6.5 Créer le layout dashboard
+  - [x] `app/(dashboard)/layout.tsx`
+  - [x] Sidebar avec navigation + logo + user info
+  - [x] Navbar avec breadcrumb + user menu
+  - [x] Responsive design (desktop + mobile Sheet)
+- [x] 6.6 Créer les stores Zustand
+  - [x] `lib/stores/use-ui-store.ts` (sidebar state + breadcrumbs)
+  - [x] `lib/stores/use-warehouse-store.ts` (selection + filtres)
+  - [x] `lib/stores/use-product-store.ts` (filtres + pagination)
+  - [x] Tous avec middleware persist (localStorage)
+- [x] 6.7 Créer les utilitaires
+  - [x] `lib/utils/constants.ts` (APP_NAME, ROUTES, LABELS, COLORS)
+  - [x] `lib/utils/helpers.ts` (slug, initials, colors, stock status)
+  - [x] `lib/utils/formatters.ts` (date, number, currency, percentage avec date-fns)
 
 **Critères de Validation**:
 
-- ✅ Layout dashboard fonctionnel
-- ✅ Navigation opérationnelle
-- ✅ Composants partagés réutilisables
-- ✅ Theme switcher fonctionne
-- ✅ Responsive sur mobile/tablet/desktop
+- ✅ Layout dashboard fonctionnel avec sidebar + navbar
+- ✅ Navigation opérationnelle avec filtrage permissions
+- ✅ Composants partagés réutilisables et configurables
+- ✅ Theme switcher fonctionne (Light/Dark/System)
+- ✅ Responsive sur mobile (Sheet sidebar) / tablet / desktop
+- ✅ Build production réussi (206 kB dashboard bundle)
+- ✅ Toaster notifications fonctionnelles
 
 ---
 
