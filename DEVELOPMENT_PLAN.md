@@ -1,7 +1,7 @@
 # Plan de Développement - Gestion de Stock Multi-Entrepôts
 
 > Mis à jour le: 2025-10-08
-> Statut global: 🟢 **Phase 3 Complétée** - Prêt pour Phase 4 (Repositories) (21%)
+> Statut global: 🟢 **Phase 4 Complétée** - Prêt pour Phase 5 (Server Actions) (29%)
 
 ---
 
@@ -96,18 +96,31 @@ Application web de gestion de stock multi-entrepôts permettant:
 - [x] **Variables environnement** (NEXT_PUBLIC_BETTER_AUTH_URL ajouté)
 - [x] **Build validation** (TypeScript + ESLint passés, pre-commit hooks OK)
 
+**Phase 4: Couche d'Accès aux Données (100%)**
+- [x] **BaseRepository** (lib/db/repositories/base.repository.ts avec méthodes CRUD génériques)
+- [x] **UserRepository** (lib/db/repositories/user.repository.ts avec gestion rôles et accès)
+- [x] **CategoryRepository** (lib/db/repositories/category.repository.ts avec hiérarchie et arbre)
+- [x] **WarehouseRepository** (lib/db/repositories/warehouse.repository.ts avec gestion accès)
+- [x] **ProductRepository** (lib/db/repositories/product.repository.ts avec variantes et attributs)
+- [x] **StockRepository** (lib/db/repositories/stock.repository.ts avec transactions et réservations)
+- [x] **MovementRepository** (lib/db/repositories/movement.repository.ts avec filtres et stats)
+- [x] **Index exports** (lib/db/repositories/index.ts pour imports centralisés)
+- [x] **Pattern singleton** (instances exportées pour tous les repositories)
+- [x] **Type safety complet** (TypeScript strict avec types Prisma)
+- [x] **Build validation** (TypeScript + ESLint passés)
+
 ### 🔄 En Cours
 
 - [ ] Aucune tâche en cours actuellement
 
 ### ⏳ Prochaines Étapes Immédiates
 
-**Phase 4: Couche d'Accès aux Données**
-1. Créer BaseRepository avec méthodes CRUD génériques
-2. Implémenter WarehouseRepository
-3. Implémenter ProductRepository
-4. Implémenter StockRepository
-5. Implémenter MovementRepository
+**Phase 5: Server Actions**
+1. Configurer Next Safe Action (client de base et client authentifié)
+2. Créer les schémas Zod de validation
+3. Implémenter warehouse.actions.ts
+4. Implémenter product.actions.ts
+5. Implémenter movement.actions.ts
 
 ---
 
@@ -252,45 +265,45 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ---
 
-### 📦 Phase 4: Couche d'Accès aux Données (0% complété)
+### ✅ Phase 4: Couche d'Accès aux Données (100% complété)
 
 **Objectif**: Créer tous les repositories avec pattern cohérent
 
 #### Étapes
 
-- [ ] 4.1 Créer BaseRepository
-  - [ ] `lib/db/repositories/base.repository.ts`
-  - [ ] Méthodes CRUD génériques
-  - [ ] Type safety
-- [ ] 4.2 Implémenter WarehouseRepository
-  - [ ] `lib/db/repositories/warehouse.repository.ts`
-  - [ ] `findAllByUser`, `findWithDetails`
-  - [ ] `getUserWarehouses`, `getUserWritableWarehouses`
-  - [ ] `assignUser`, `removeUser`
-- [ ] 4.3 Implémenter ProductRepository
-  - [ ] `lib/db/repositories/product.repository.ts`
-  - [ ] CRUD produits
-  - [ ] Gestion variantes
-  - [ ] Gestion attributs
-  - [ ] Recherche et filtrage
-- [ ] 4.4 Implémenter StockRepository
-  - [ ] `lib/db/repositories/stock.repository.ts`
-  - [ ] `findByWarehouse`, `findByProduct`
-  - [ ] `updateQuantity` (avec transactions)
-  - [ ] `getLowStockItems`
-- [ ] 4.5 Implémenter MovementRepository
-  - [ ] `lib/db/repositories/movement.repository.ts`
-  - [ ] `findByFilters` (warehouse, product, type, date)
-  - [ ] `getRecentMovements`
-  - [ ] Stats et analytics
-- [ ] 4.6 Implémenter UserRepository
-  - [ ] `lib/db/repositories/user.repository.ts`
-  - [ ] CRUD utilisateurs
-  - [ ] Gestion des accès entrepôts
-- [ ] 4.7 Implémenter CategoryRepository
-  - [ ] `lib/db/repositories/category.repository.ts`
-  - [ ] Hiérarchie de catégories
-  - [ ] `findTree`, `findWithProducts`
+- [x] 4.1 Créer BaseRepository
+  - [x] `lib/db/repositories/base.repository.ts`
+  - [x] Méthodes CRUD génériques
+  - [x] Type safety
+- [x] 4.2 Implémenter WarehouseRepository
+  - [x] `lib/db/repositories/warehouse.repository.ts`
+  - [x] `findAllByUser`, `findWithDetails`
+  - [x] `getUserWarehouses`, `getUserWritableWarehouses`
+  - [x] `assignUser`, `removeUser`
+- [x] 4.3 Implémenter ProductRepository
+  - [x] `lib/db/repositories/product.repository.ts`
+  - [x] CRUD produits
+  - [x] Gestion variantes
+  - [x] Gestion attributs
+  - [x] Recherche et filtrage
+- [x] 4.4 Implémenter StockRepository
+  - [x] `lib/db/repositories/stock.repository.ts`
+  - [x] `findByWarehouse`, `findByProduct`
+  - [x] `updateQuantity` (avec transactions)
+  - [x] `getLowStockItems`
+- [x] 4.5 Implémenter MovementRepository
+  - [x] `lib/db/repositories/movement.repository.ts`
+  - [x] `findByFilters` (warehouse, product, type, date)
+  - [x] `getRecentMovements`
+  - [x] Stats et analytics
+- [x] 4.6 Implémenter UserRepository
+  - [x] `lib/db/repositories/user.repository.ts`
+  - [x] CRUD utilisateurs
+  - [x] Gestion des accès entrepôts
+- [x] 4.7 Implémenter CategoryRepository
+  - [x] `lib/db/repositories/category.repository.ts`
+  - [x] Hiérarchie de catégories
+  - [x] `findTree`, `findWithProducts`
 
 **Critères de Validation**:
 
@@ -910,7 +923,24 @@ Aucun blocage actuellement.
 - ✅ Pre-commit hooks passés (husky + lint-staged)
 - ✅ Commit `8132646` avec 16 fichiers modifiés, 968 insertions
 - 🎯 **Phase 3 complète à 100%**
-- ⏳ Prochaine étape: Phase 4 - Couche d'Accès aux Données (Repositories)
+
+**Phase 4 - Couche d'Accès aux Données (fin de soirée)**
+- ✅ Branche `feature/phase-4-repositories` créée
+- ✅ BaseRepository créé avec méthodes CRUD génériques type-safe
+- ✅ UserRepository avec gestion rôles, recherche, et statistiques
+- ✅ CategoryRepository avec hiérarchie, arbre récursif, et breadcrumb
+- ✅ WarehouseRepository avec gestion accès utilisateurs et stats
+- ✅ ProductRepository avec variantes, attributs, recherche et stock
+- ✅ StockRepository avec transactions Prisma, réservations, et alertes stock bas
+- ✅ MovementRepository avec filtres avancés, pagination, et analytics
+- ✅ Index exports créé (lib/db/repositories/index.ts)
+- ✅ Pattern singleton pour toutes les instances
+- ✅ Type safety complet avec types Prisma générés
+- ✅ Validation build TypeScript et ESLint
+- ✅ Commit `9d81dba` avec 8 fichiers créés, 2138 insertions
+- ✅ Pre-commit hooks passés (eslint --fix, tsc --noEmit)
+- 🎯 **Phase 4 complète à 100%**
+- ⏳ Prochaine étape: Phase 5 - Server Actions (Next Safe Action + Zod)
 
 ---
 
@@ -918,13 +948,14 @@ Aucun blocage actuellement.
 
 | Métrique | Valeur Actuelle | Objectif |
 |----------|-----------------|----------|
-| **Progression Globale** | 21% | 100% |
-| **Phases Complétées** | 3/14 ✅ | 14/14 |
+| **Progression Globale** | 29% | 100% |
+| **Phases Complétées** | 4/14 ✅ | 14/14 |
 | **Tests Écrits** | 0 | TBD |
 | **Couverture Code** | 0% | >80% |
 | **Pages Créées** | 3 (home, login, dashboard) | ~30 |
 | **Composants UI** | 30+ (Shadcn) | ~60 |
 | **Composants Auth** | 2 (AuthGuard, Login) ✅ | 2 |
+| **Repositories** | 7 (Base, User, Category, Warehouse, Product, Stock, Movement) ✅ | 7 |
 | **Server Actions** | 0 | ~25 |
 | **Dépendances Installées** | 16+ packages | Complet ✅ |
 | **Modèles Database** | 12 modèles ✅ | 12 modèles |
