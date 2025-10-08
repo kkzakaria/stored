@@ -1,0 +1,227 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  ADMINISTRATOR
+  MANAGER
+  USER
+  VISITOR_ADMIN
+  VISITOR
+}
+
+enum MovementType {
+  IN
+  OUT
+  TRANSFER
+  ADJUSTMENT
+}
+
+// ============================================
+// AUTHENTICATION & USERS
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  role          UserRole
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  warehouseAccess WarehouseAccess[]
+  movements       Movement[]
+  createdProducts Product[] @relation("ProductCreator")
+
+  @@index([email])
+  @@index([role])
+  @@index([active])
+  @@map("users")
+}
+
+// ============================================
+// WAREHOUSES
+// ============================================
+
+model Warehouse {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  address     String?
+  city        String?
+  country     String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  access        WarehouseAccess[]
+  stock         Stock[]
+  movementsFrom Movement[] @relation("MovementFrom")
+  movementsTo   Movement[] @relation("MovementTo")
+
+  @@index([code])
+  @@index([active])
+  @@map("warehouses")
+}
+
+model WarehouseAccess {
+  id          String   @id @default(cuid())
+  userId      String
+  warehouseId String
+  canWrite    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, warehouseId])
+  @@index([userId])
+  @@index([warehouseId])
+  @@map("warehouse_access")
+}
+
+// ============================================
+// PRODUCTS & CATEGORIES
+// ============================================
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+
+  @@index([parentId])
+  @@index([active])
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  description String?
+  categoryId  String
+  unit        String
+  minStock    Int      @default(0)
+  active      Boolean  @default(true)
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category    Category @relation(fields: [categoryId], references: [id])
+  creator     User     @relation("ProductCreator", fields: [createdBy], references: [id])
+  variants    ProductVariant[]
+  attributes  ProductAttribute[]
+  stock       Stock[]
+  movements   Movement[]
+
+  @@index([sku])
+  @@index([categoryId])
+  @@index([active])
+  @@map("products")
+}
+
+model ProductVariant {
+  id          String   @id @default(cuid())
+  productId   String
+  name        String
+  sku         String   @unique
+  attributes  Json
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stock       Stock[]
+  movements   Movement[]
+
+  @@index([productId])
+  @@index([sku])
+  @@index([active])
+  @@map("product_variants")
+}
+
+model ProductAttribute {
+  id          String   @id @default(cuid())
+  productId   String
+  name        String
+  value       String
+  createdAt   DateTime @default(now())
+
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@map("product_attributes")
+}
+
+// ============================================
+// STOCK & MOVEMENTS
+// ============================================
+
+model Stock {
+  id          String   @id @default(cuid())
+  warehouseId String
+  productId   String
+  variantId   String?
+  quantity    Int      @default(0)
+  reservedQty Int      @default(0)
+  updatedAt   DateTime @updatedAt
+
+  warehouse   Warehouse       @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@unique([warehouseId, productId, variantId])
+  @@index([warehouseId])
+  @@index([productId])
+  @@index([quantity])
+  @@map("stock")
+}
+
+model Movement {
+  id              String       @id @default(cuid())
+  type            MovementType
+  productId       String
+  variantId       String?
+  quantity        Int
+  fromWarehouseId String?
+  toWarehouseId   String?
+  userId          String
+  reference       String?
+  notes           String?
+  createdAt       DateTime     @default(now())
+
+  product         Product         @relation(fields: [productId], references: [id])
+  variant         ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  fromWarehouse   Warehouse?      @relation("MovementFrom", fields: [fromWarehouseId], references: [id])
+  toWarehouse     Warehouse?      @relation("MovementTo", fields: [toWarehouseId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([fromWarehouseId])
+  @@index([toWarehouseId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+  @@map("movements")
+}
