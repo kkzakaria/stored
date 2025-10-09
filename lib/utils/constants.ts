@@ -23,6 +23,7 @@ export const ROUTES = {
   USERS: "/users",
   USER_DETAIL: (id: string) => `/users/${id}`,
   USER_NEW: "/users/new",
+  REPORTS: "/reports",
   SETTINGS: "/settings",
 } as const;
 

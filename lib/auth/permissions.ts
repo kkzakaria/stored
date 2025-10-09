@@ -22,6 +22,7 @@ export type Permission =
   | "categories:read"
   | "categories:write"
   | "categories:delete"
+  | "reports:read"
   | "users:read"
   | "users:write"
   | "users:delete"
@@ -51,6 +52,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     "categories:read",
     "categories:write",
     "categories:delete",
+    "reports:read",
     "users:read",
     "users:write",
     "users:delete",
@@ -66,6 +68,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     "movements:read",
     "movements:write",
     "categories:read",
+    "reports:read",
     "users:read",
   ],
   [UserRole.USER]: [
@@ -76,6 +79,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     "movements:read",
     "movements:write",
     "categories:read",
+    "reports:read",
   ],
   [UserRole.VISITOR_ADMIN]: [
     "products:read",
@@ -83,6 +87,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     "stock:read",
     "movements:read",
     "categories:read",
+    "reports:read",
     "users:read",
   ],
   [UserRole.VISITOR]: [
@@ -90,6 +95,7 @@ const rolePermissions: Record<UserRole, Permission[]> = {
     "warehouses:read",
     "stock:read",
     "categories:read",
+    "reports:read",
   ],
 };
 
