@@ -65,9 +65,7 @@ export default async function DashboardPage() {
 
   // Get KPI data
   const totalWarehouses = warehouses.length;
-  const totalProducts = await productRepository.count({
-    where: { active: true },
-  });
+  const totalProducts = await productRepository.count({ active: true });
 
   // Get today's movements count (aggregate from all accessible warehouses)
   const todayRange = getTodayDateRange();

@@ -41,12 +41,15 @@ async function WarehousesContent({ searchParams }: PageProps) {
   }
 
   // Fetch warehouses with stats
-  const warehouses = await warehouseRepository.findMany(where, {
-    _count: {
-      select: {
-        stock: true,
-        movementsFrom: true,
-        movementsTo: true,
+  const warehouses = await warehouseRepository.findMany({
+    where,
+    include: {
+      _count: {
+        select: {
+          stock: true,
+          movementsFrom: true,
+          movementsTo: true,
+        },
       },
     },
   });

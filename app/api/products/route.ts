@@ -6,8 +6,10 @@ type ProductWithVariants = Product & { variants: ProductVariant[] };
 
 export async function GET() {
   try {
-    const products = await productRepository.findMany({}, {
-      variants: true,
+    const products = await productRepository.findMany({
+      include: {
+        variants: true,
+      },
     }) as unknown as ProductWithVariants[];
 
     // Return simplified product data with variants
