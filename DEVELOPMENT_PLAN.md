@@ -1,7 +1,7 @@
 # Plan de Développement - Gestion de Stock Multi-Entrepôts
 
 > Mis à jour le: 2025-10-09
-> Statut global: 🟢 **Phase 10 Complétée** - Prêt pour Phase 11 (Module Dashboard) (71%)
+> Statut global: 🟢 **Phase 11 Complétée** - Prêt pour Phase 12 (Module Rapports) (79%)
 
 ---
 
@@ -192,12 +192,12 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ### ⏳ Prochaines Étapes Immédiates
 
-**Phase 11: Module Dashboard**
-1. Créer la page dashboard avec KPIs
-2. Implémenter les cartes de statistiques
-3. Créer le graphique de stock
-4. Créer les mouvements récents
-5. Créer les alertes stock bas
+**Phase 12: Module Rapports**
+1. Créer la page rapports avec onglets
+2. Implémenter le rapport de stock
+3. Créer le rapport de mouvements
+4. Créer les filtres de rapports
+5. Implémenter l'export CSV/Excel
 
 ---
 
@@ -725,47 +725,47 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ---
 
-### 📊 Phase 11: Module Dashboard (0% complété)
+### 📊 Phase 11: Module Dashboard (100% complété) ✅
 
 **Objectif**: Créer un tableau de bord avec KPIs et stats
 
 #### Étapes
 
-- [ ] 11.1 Créer la page dashboard
-  - [ ] `app/(dashboard)/dashboard/page.tsx`
-  - [ ] Vue adaptée au rôle
-- [ ] 11.2 Créer les cartes de statistiques
-  - [ ] `stats-cards.tsx`
-  - [ ] Nombre d'entrepôts
-  - [ ] Nombre de produits
-  - [ ] Valeur stock total (si prix ajoutés)
-  - [ ] Mouvements du jour
-- [ ] 11.3 Créer le graphique de stock
-  - [ ] `stock-chart.tsx`
-  - [ ] Évolution stock dans le temps
-  - [ ] Utiliser une lib de charts (Recharts ou Chart.js)
-- [ ] 11.4 Créer les mouvements récents
-  - [ ] `recent-movements.tsx`
-  - [ ] Liste des 10 derniers mouvements
-  - [ ] Lien vers détails
-- [ ] 11.5 Créer les alertes stock bas
-  - [ ] `low-stock-alerts.tsx`
-  - [ ] Produits < minStock
-  - [ ] Actions rapides
-- [ ] 11.6 Créer la vue entrepôts
-  - [ ] `warehouse-overview.tsx`
-  - [ ] Cartes par entrepôt avec stats
-- [ ] 11.7 Créer les actions rapides
-  - [ ] `quick-actions.tsx`
-  - [ ] Boutons: Nouveau mouvement, Nouveau produit, etc.
+- [x] 11.1 Créer la page dashboard
+  - [x] `app/(dashboard)/dashboard/page.tsx`
+  - [x] Vue adaptée au rôle (admin vs assigned warehouses)
+- [x] 11.2 Créer les cartes de statistiques
+  - [x] `stats-cards.tsx`
+  - [x] Nombre d'entrepôts
+  - [x] Nombre de produits
+  - [x] Low stock items count
+  - [x] Mouvements du jour
+- [x] 11.3 Créer le graphique de stock
+  - [x] `stock-chart.tsx`
+  - [x] Évolution mouvements 7 derniers jours
+  - [x] Recharts library (installed v2.15.1)
+- [x] 11.4 Créer les mouvements récents
+  - [x] `recent-movements.tsx`
+  - [x] Liste des 10 derniers mouvements
+  - [x] Lien vers détails
+- [x] 11.5 Créer les alertes stock bas
+  - [x] `low-stock-alerts.tsx`
+  - [x] Produits < minStock
+  - [x] Actions rapides (Restock button)
+- [x] 11.6 Créer la vue entrepôts
+  - [x] `warehouse-overview.tsx`
+  - [x] Cartes par entrepôt avec stats (totalItems, low stock, quantities)
+- [x] 11.7 Créer les actions rapides
+  - [x] `quick-actions.tsx`
+  - [x] Boutons: Nouveau mouvement, Nouveau produit, etc. (rôle-based visibility)
 
 **Critères de Validation**:
 
-- ✅ Dashboard affiche les bonnes stats
-- ✅ Graphiques fonctionnels
-- ✅ Alertes stock bas correctes
-- ✅ Actions rapides opérationnelles
-- ✅ Performance optimale (pas de lag)
+- ✅ Dashboard affiche les bonnes stats (warehouses, products, movements, low stock)
+- ✅ Graphiques fonctionnels (Recharts line chart avec 3 lignes)
+- ✅ Alertes stock bas correctes (filtrage par minStock avec severity)
+- ✅ Actions rapides opérationnelles (permissions-based visibility)
+- ✅ Performance optimale (server components, pas de lag)
 
 ---
 
@@ -1165,7 +1165,28 @@ Aucun blocage actuellement.
 - ✅ TypeScript + ESLint passent sans erreur
 - ✅ 3 routes générées (/users, /users/[id], /users/[id]/edit)
 - 🎯 **Phase 10 complète à 100%**
-- ⏳ Prochaine étape: Phase 11 - Module Dashboard
+
+### Phase 11 - Module Dashboard (2025-10-09)
+
+- ✅ 8 fichiers créés (1 utilitaire, 6 composants, 1 page dashboard refactored)
+- ✅ Recharts library installée (v2.15.1 pour visualisations)
+- ✅ Utilitaire dashboard.ts (KPI helpers, formatters, chart data preparation, date ranges)
+- ✅ Page dashboard avec Server Component et role-based filtering
+- ✅ Stats cards (4 KPIs: warehouses, products, low stock, daily movements)
+- ✅ Stock chart avec Recharts (line chart 7 derniers jours: IN, OUT, Total)
+- ✅ Recent movements component (10 derniers mouvements avec liens détails)
+- ✅ Low stock alerts (items < minStock avec severity colors et restock button)
+- ✅ Warehouse overview (grid de cartes avec stats par warehouse)
+- ✅ Quick actions (boutons role-based: movements, products, warehouses, users, views)
+- ✅ Role-based data filtering (ADMINISTRATOR/VISITOR_ADMIN: tous, autres: assigned only)
+- ✅ Repository method integration (warehouseSummary, lowStockItems, movements stats)
+- ✅ Responsive design (mobile 1 col, tablet 2 cols, desktop 3-4 cols)
+- ✅ Toast notifications (Sonner)
+- ✅ TypeScript errors fixed (DateTimeFormat, reservedQty, warehouse.address)
+- ✅ TypeScript + ESLint passent sans erreur
+- ✅ Build validation complet
+- 🎯 **Phase 11 complète à 100%**
+- ⏳ Prochaine étape: Phase 12 - Module Rapports
 
 ---
 
@@ -1173,22 +1194,22 @@ Aucun blocage actuellement.
 
 | Métrique | Valeur Actuelle | Objectif |
 |----------|-----------------|----------|
-| **Progression Globale** | 71% | 100% |
-| **Phases Complétées** | 10/14 ✅ | 14/14 |
+| **Progression Globale** | 79% | 100% |
+| **Phases Complétées** | 11/14 ✅ | 14/14 |
 | **Tests Écrits** | 0 | TBD |
 | **Couverture Code** | 0% | >80% |
 | **Pages Créées** | 15 (home, login, dashboard, warehouses×3, products×3, movements×3, users×3) | ~30 |
-| **Composants UI** | 77+ (Shadcn + 16 warehouse + 10 product + 10 movement + 11 user) | ~80 |
+| **Composants UI** | 83+ (Shadcn + 16 warehouse + 10 product + 10 movement + 11 user + 6 dashboard) | ~80 |
 | **Composants Auth** | 2 (AuthGuard, Login) ✅ | 2 |
 | **Repositories** | 7 (Base, User, Category, Warehouse, Product, Stock, Movement) ✅ | 7 |
 | **Server Actions** | 26 actions ✅ | ~26 |
-| **Dépendances Installées** | 16+ packages | Complet ✅ |
+| **Dépendances Installées** | 17+ packages (Recharts added) | Complet ✅ |
 | **Modèles Database** | 12 modèles ✅ | 12 modèles |
 | **Tables Database** | 12 tables ✅ | 12 tables |
 | **Scripts npm DB** | 6 scripts ✅ | 6 scripts |
 | **Routes API** | 6 (auth, categories/tree, stock/available, warehouses, products, user/role) ✅ | ~7 |
 | **Middleware** | 1 (protection) ✅ | 1 |
-| **Utilities** | 5 (warehouse, product, movement, user, formatters/helpers/constants) ✅ | ~5 |
+| **Utilities** | 6 (warehouse, product, movement, user, dashboard, formatters/helpers/constants) ✅ | ~6 |
 
 ---
 
