@@ -97,6 +97,7 @@ export class WarehouseRepository extends BaseRepository<Warehouse> {
                 name: true,
                 email: true,
                 role: true,
+                active: true,
               },
             },
           },
