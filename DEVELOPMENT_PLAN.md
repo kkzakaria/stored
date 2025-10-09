@@ -1,7 +1,7 @@
 # Plan de Développement - Gestion de Stock Multi-Entrepôts
 
 > Mis à jour le: 2025-10-09
-> Statut global: 🟢 **Phase 9 Complétée** - Prêt pour Phase 10 (Module Utilisateurs) (64%)
+> Statut global: 🟢 **Phase 10 Complétée** - Prêt pour Phase 11 (Module Dashboard) (71%)
 
 ---
 
@@ -171,18 +171,33 @@ Application web de gestion de stock multi-entrepôts permettant:
 - [x] **API routes** (stock/available, warehouses, products, user/role)
 - [x] **Build validation** (TypeScript + ESLint passés, 3 routes mouvements)
 
+**Phase 10: Module Utilisateurs (100%)**
+- [x] **Utilitaire user** (lib/utils/user.ts avec helpers rôles, statuts, password strength, filtres)
+- [x] **Page liste** (app/(dashboard)/users/page.tsx avec filtres Nuqs, ADMINISTRATOR only)
+- [x] **Composants liste** (user-list, user-card, user-filters avec search/role/activeOnly)
+- [x] **Composants base** (user-status-badge, password-input avec force indicator)
+- [x] **Sélecteur rôle** (role-selector avec descriptions et permissions des 5 rôles)
+- [x] **Dialogue création** (create-user-dialog avec validation password forte)
+- [x] **Formulaire user** (user-form réutilisable create/edit avec toggle active)
+- [x] **Gestionnaire entrepôts** (user-warehouse-manager avec assign/remove + canWrite toggle)
+- [x] **Historique mouvements** (user-movements-history avec affichage détaillé)
+- [x] **Page détail** (app/(dashboard)/users/[id]/page.tsx avec tabs: Warehouses, Movements, Permissions)
+- [x] **Page édition** (app/(dashboard)/users/[id]/edit/page.tsx avec user-edit-form)
+- [x] **Bouton suppression** (delete-user-button avec confirmation dialog)
+- [x] **Build validation** (TypeScript + ESLint passés, 3 routes users)
+
 ### 🔄 En Cours
 
 - [ ] Aucune tâche en cours actuellement
 
 ### ⏳ Prochaines Étapes Immédiates
 
-**Phase 10: Module Utilisateurs**
-1. Créer la page liste utilisateurs (admin only)
-2. Implémenter le CRUD utilisateurs
-3. Créer le sélecteur de rôle avec descriptions
-4. Implémenter l'assignation d'entrepôts
-5. Créer la page détail utilisateur
+**Phase 11: Module Dashboard**
+1. Créer la page dashboard avec KPIs
+2. Implémenter les cartes de statistiques
+3. Créer le graphique de stock
+4. Créer les mouvements récents
+5. Créer les alertes stock bas
 
 ---
 
@@ -665,38 +680,38 @@ Application web de gestion de stock multi-entrepôts permettant:
 
 ---
 
-### 👥 Phase 10: Module Utilisateurs (0% complété)
+### ✅ Phase 10: Module Utilisateurs (100% complété)
 
 **Objectif**: Gestion des utilisateurs (admin uniquement)
 
 #### Étapes
 
-- [ ] 10.1 Créer la page liste utilisateurs
-  - [ ] `app/(dashboard)/users/page.tsx`
-  - [ ] Visible uniquement pour ADMINISTRATOR
-- [ ] 10.2 Créer les composants liste
-  - [ ] `user-list.tsx`
-  - [ ] `user-card.tsx` avec rôle et statut
-- [ ] 10.3 Créer le dialogue création
-  - [ ] `create-user-dialog.tsx`
-  - [ ] Formulaire: email, nom, rôle, password
-  - [ ] Validation password fort
-- [ ] 10.4 Créer le formulaire utilisateur
-  - [ ] `user-form.tsx`
-  - [ ] Édition profil
-  - [ ] Changement rôle
-  - [ ] Activation/désactivation
-- [ ] 10.5 Créer le sélecteur de rôle
-  - [ ] `role-selector.tsx`
-  - [ ] 5 rôles avec descriptions
-- [ ] 10.6 Créer l'assignation entrepôts
-  - [ ] `assign-warehouses.tsx`
-  - [ ] Liste entrepôts disponibles
-  - [ ] Toggle accès + canWrite
-- [ ] 10.7 Créer la page détail utilisateur
-  - [ ] `app/(dashboard)/users/[id]/page.tsx`
-  - [ ] Informations + entrepôts assignés
-  - [ ] Historique des mouvements créés
+- [x] 10.1 Créer la page liste utilisateurs
+  - [x] `app/(dashboard)/users/page.tsx`
+  - [x] Visible uniquement pour ADMINISTRATOR
+- [x] 10.2 Créer les composants liste
+  - [x] `user-list.tsx`
+  - [x] `user-card.tsx` avec rôle et statut
+- [x] 10.3 Créer le dialogue création
+  - [x] `create-user-dialog.tsx`
+  - [x] Formulaire: email, nom, rôle, password
+  - [x] Validation password fort
+- [x] 10.4 Créer le formulaire utilisateur
+  - [x] `user-form.tsx`
+  - [x] Édition profil
+  - [x] Changement rôle
+  - [x] Activation/désactivation
+- [x] 10.5 Créer le sélecteur de rôle
+  - [x] `role-selector.tsx`
+  - [x] 5 rôles avec descriptions
+- [x] 10.6 Créer l'assignation entrepôts
+  - [x] `user-warehouse-manager.tsx`
+  - [x] Liste entrepôts disponibles
+  - [x] Toggle accès + canWrite
+- [x] 10.7 Créer la page détail utilisateur
+  - [x] `app/(dashboard)/users/[id]/page.tsx`
+  - [x] Informations + entrepôts assignés
+  - [x] Historique des mouvements créés
 
 **Critères de Validation**:
 
@@ -705,6 +720,8 @@ Application web de gestion de stock multi-entrepôts permettant:
 - ✅ Assignation entrepôts opérationnelle
 - ✅ Permissions correctement appliquées
 - ✅ Impossible d'accéder si pas admin
+- ✅ TypeScript + ESLint passent sans erreur
+- ✅ Build production validé
 
 ---
 
@@ -1124,7 +1141,31 @@ Aucun blocage actuellement.
 - ✅ TypeScript + ESLint passent sans erreur
 - ✅ 3 routes générées (/movements, /movements/new, /movements/[id])
 - 🎯 **Phase 9 complète à 100%**
-- ⏳ Prochaine étape: Phase 10 - Module Utilisateurs
+
+### Phase 10 - Module Utilisateurs (2025-10-09)
+
+- ✅ 16 fichiers créés (1 utilitaire, 11 composants, 3 pages, 1 wrapper)
+- ✅ Page liste avec filtres Nuqs (search, role, activeOnly) - ADMINISTRATOR only
+- ✅ Composants liste (user-list, user-card, user-filters)
+- ✅ Composants base (user-status-badge, password-input avec strength indicator)
+- ✅ Sélecteur rôle (role-selector avec descriptions et permissions des 5 rôles)
+- ✅ Dialogue création (create-user-dialog avec validation password forte)
+- ✅ Formulaire user réutilisable (user-form pour create/edit avec toggle active)
+- ✅ Gestionnaire entrepôts (user-warehouse-manager: assign/remove + canWrite toggle)
+- ✅ Historique mouvements (user-movements-history avec affichage détaillé)
+- ✅ Page détail complète avec tabs (Warehouses, Movements, Permissions)
+- ✅ Page édition (user-edit-form wrapper avec pre-fill)
+- ✅ Bouton suppression (delete-user-button avec confirmation dialog)
+- ✅ Utilitaire user.ts (helpers rôles, statuts, password strength, filtres)
+- ✅ Permissions ADMINISTRATOR-only avec vérification stricte
+- ✅ Password strength calculator (0-4 score avec suggestions)
+- ✅ Type assertions pour included relations Prisma
+- ✅ Responsive design (grid 1/2 cols + mobile)
+- ✅ Toast notifications (Sonner)
+- ✅ TypeScript + ESLint passent sans erreur
+- ✅ 3 routes générées (/users, /users/[id], /users/[id]/edit)
+- 🎯 **Phase 10 complète à 100%**
+- ⏳ Prochaine étape: Phase 11 - Module Dashboard
 
 ---
 
@@ -1132,12 +1173,12 @@ Aucun blocage actuellement.
 
 | Métrique | Valeur Actuelle | Objectif |
 |----------|-----------------|----------|
-| **Progression Globale** | 64% | 100% |
-| **Phases Complétées** | 9/14 ✅ | 14/14 |
+| **Progression Globale** | 71% | 100% |
+| **Phases Complétées** | 10/14 ✅ | 14/14 |
 | **Tests Écrits** | 0 | TBD |
 | **Couverture Code** | 0% | >80% |
-| **Pages Créées** | 12 (home, login, dashboard, warehouses×3, products×3, movements×3) | ~30 |
-| **Composants UI** | 66+ (Shadcn + 16 warehouse + 10 product + 10 movement) | ~80 |
+| **Pages Créées** | 15 (home, login, dashboard, warehouses×3, products×3, movements×3, users×3) | ~30 |
+| **Composants UI** | 77+ (Shadcn + 16 warehouse + 10 product + 10 movement + 11 user) | ~80 |
 | **Composants Auth** | 2 (AuthGuard, Login) ✅ | 2 |
 | **Repositories** | 7 (Base, User, Category, Warehouse, Product, Stock, Movement) ✅ | 7 |
 | **Server Actions** | 26 actions ✅ | ~26 |
@@ -1147,7 +1188,7 @@ Aucun blocage actuellement.
 | **Scripts npm DB** | 6 scripts ✅ | 6 scripts |
 | **Routes API** | 6 (auth, categories/tree, stock/available, warehouses, products, user/role) ✅ | ~7 |
 | **Middleware** | 1 (protection) ✅ | 1 |
-| **Utilities** | 4 (warehouse, product, movement, formatters/helpers/constants) ✅ | ~5 |
+| **Utilities** | 5 (warehouse, product, movement, user, formatters/helpers/constants) ✅ | ~5 |
 
 ---
 
