@@ -1,180 +1,198 @@
-"use client";
-
-import * as React from "react";
-import { useSession } from "@/lib/auth/client";
-import { type UserWithRole } from "@/lib/auth/permissions";
-import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { USER_ROLE_LABELS } from "@/lib/utils/constants";
-import { useUIStore } from "@/lib/stores";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth/config";
 import {
-  Package,
-  Warehouse,
-  ArrowRightLeft,
-  TrendingUp,
-} from "lucide-react";
+  userRepository,
+  warehouseRepository,
+  productRepository,
+  stockRepository,
+  movementRepository,
+} from "@/lib/db/repositories";
+import { PageHeader } from "@/components/shared/page-header";
+import { StatsCards } from "./_components/stats-cards";
+import { StockChart } from "./_components/stock-chart";
+import { RecentMovements } from "./_components/recent-movements";
+import { LowStockAlerts } from "./_components/low-stock-alerts";
+import { WarehouseOverview } from "./_components/warehouse-overview";
+import { QuickActions } from "./_components/quick-actions";
+import {
+  getWarehouseKPI,
+  getProductKPI,
+  getDailyMovementsKPI,
+  getTodayDateRange,
+  getLastNDaysRange,
+  groupMovementsByDate,
+} from "@/lib/utils/dashboard";
+import { AlertTriangle } from "lucide-react";
 
-export default function DashboardPage() {
-  const { data: session } = useSession();
-  const { setBreadcrumbs } = useUIStore();
+export default async function DashboardPage() {
+  // Check authentication
+  const session = await auth.api.getSession({
+    headers: await import("next/headers").then((m) => m.headers()),
+  });
 
-  const user = session?.user as unknown as UserWithRole | undefined;
+  if (!session?.user) {
+    redirect("/login");
+  }
 
-  // Set breadcrumbs
-  React.useEffect(() => {
-    setBreadcrumbs([{ label: "Dashboard" }]);
-  }, [setBreadcrumbs]);
+  // Get current user
+  const currentUser = await userRepository.findById(session.user.id);
+
+  if (!currentUser) {
+    redirect("/login");
+  }
+
+  // Determine accessible warehouses based on role
+  const isAdmin = currentUser.role === "ADMINISTRATOR";
+  const isVisitorAdmin = currentUser.role === "VISITOR_ADMIN";
+  const hasGlobalAccess = isAdmin || isVisitorAdmin;
+
+  // Get warehouses (all for admins, assigned for others)
+  let warehouses;
+  if (hasGlobalAccess) {
+    warehouses = await warehouseRepository.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+    });
+  } else {
+    // Get user's warehouse access
+    const userAccess = await warehouseRepository.getUserWarehouses(session.user.id);
+    warehouses = userAccess
+      .filter((wa) => wa.warehouse.active)
+      .map((wa) => wa.warehouse);
+  }
+
+  const warehouseIds = warehouses.map((w) => w.id);
+
+  // Get KPI data
+  const totalWarehouses = warehouses.length;
+  const totalProducts = await productRepository.count({
+    where: { active: true },
+  });
+
+  // Get today's movements count (aggregate from all accessible warehouses)
+  const todayRange = getTodayDateRange();
+  const todayMovements = await movementRepository.findMany({
+    where: {
+      createdAt: {
+        gte: todayRange.from,
+        lte: todayRange.to,
+      },
+      ...(hasGlobalAccess
+        ? {}
+        : {
+            OR: [
+              { fromWarehouseId: { in: warehouseIds } },
+              { toWarehouseId: { in: warehouseIds } },
+            ],
+          }),
+    },
+  });
+  const todayMovementsStats = {
+    total: todayMovements.length,
+  };
+
+  // Get warehouse statistics
+  const warehousesWithStats = await Promise.all(
+    warehouses.map(async (warehouse) => {
+      const stats = await stockRepository.getWarehouseSummary(warehouse.id);
+      return {
+        id: warehouse.id,
+        name: warehouse.name,
+        code: warehouse.code,
+        location: warehouse.address,
+        active: warehouse.active,
+        stats,
+      };
+    })
+  );
+
+  // Get low stock items across accessible warehouses
+  const lowStockItemsByWarehouse = await Promise.all(
+    warehouseIds.map((id) => stockRepository.getLowStockItems(id))
+  );
+  const lowStockItems = lowStockItemsByWarehouse.flat();
+
+  // Get recent movements (last 10)
+  const recentMovements = await movementRepository.getRecentMovements(10);
+
+  // Filter movements by accessible warehouses if not admin
+  const filteredRecentMovements = hasGlobalAccess
+    ? recentMovements
+    : recentMovements.filter(
+        (movement) =>
+          (movement.fromWarehouse &&
+            warehouseIds.includes(movement.fromWarehouse.id)) ||
+          (movement.toWarehouse && warehouseIds.includes(movement.toWarehouse.id))
+      );
+
+  // Get movement data for chart (last 7 days)
+  const last7Days = getLastNDaysRange(7);
+  const allMovements = await movementRepository.findMany({
+    where: {
+      createdAt: {
+        gte: last7Days.from,
+        lte: last7Days.to,
+      },
+      ...(hasGlobalAccess
+        ? {}
+        : {
+            OR: [
+              { fromWarehouseId: { in: warehouseIds } },
+              { toWarehouseId: { in: warehouseIds } },
+            ],
+          }),
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  const chartData = groupMovementsByDate(allMovements);
+
+  // Prepare KPIs
+  const kpis = [
+    getWarehouseKPI(totalWarehouses),
+    getProductKPI(totalProducts),
+    getDailyMovementsKPI(todayMovementsStats.total),
+    {
+      label: "Low Stock Items",
+      value: lowStockItems.length,
+      description: "Products below minimum",
+      icon: AlertTriangle,
+      color:
+        lowStockItems.length > 0
+          ? "text-orange-600 dark:text-orange-400"
+          : "text-green-600 dark:text-green-400",
+    },
+  ];
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Dashboard"
-        description={`Bienvenue, ${user?.name || "Utilisateur"}`}
+        description={`Welcome back, ${currentUser.name || currentUser.email}`}
       />
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Produits
-            </CardTitle>
-            <Package className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">
-              Données à venir dans Phase 7
-            </p>
-          </CardContent>
-        </Card>
+      {/* KPI Stats Cards */}
+      <StatsCards kpis={kpis} />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Entrepôts</CardTitle>
-            <Warehouse className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">
-              Gestion entrepôts à venir
-            </p>
-          </CardContent>
-        </Card>
+      {/* Quick Actions */}
+      <QuickActions userRole={currentUser.role} />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Mouvements (mois)
-            </CardTitle>
-            <ArrowRightLeft className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">
-              Stats à venir dans Phase 9
-            </p>
-          </CardContent>
-        </Card>
+      {/* Stock Movement Chart */}
+      <StockChart data={chartData} />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Valeur Stock
-            </CardTitle>
-            <TrendingUp className="size-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-xs text-muted-foreground">
-              Calcul à venir
-            </p>
-          </CardContent>
-        </Card>
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Movements */}
+        <RecentMovements movements={filteredRecentMovements} />
+
+        {/* Low Stock Alerts */}
+        <LowStockAlerts items={lowStockItems.slice(0, 5)} />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Profil Utilisateur</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground">
-                Nom
-              </span>
-              <p className="text-base">{user?.name}</p>
-            </div>
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground">
-                Email
-              </span>
-              <p className="text-base">{user?.email}</p>
-            </div>
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground">
-                Rôle
-              </span>
-              <div>
-                <Badge variant="secondary">
-                  {user?.role ? USER_ROLE_LABELS[user.role] : "—"}
-                </Badge>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground">
-                Statut
-              </span>
-              <div>
-                <Badge variant={user?.active ? "default" : "destructive"}>
-                  {user?.active ? "Actif" : "Inactif"}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Phase 6: Interface Utilisateur</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Composants Shadcn UI installés</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Providers créés (Theme, Toaster)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Stores Zustand configurés</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Utilitaires créés</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Composants partagés créés</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Navigation complète (Sidebar, Navbar)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="size-2 rounded-full bg-green-500" />
-                <span className="text-sm">Layout Dashboard créé</span>
-              </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Prochaine étape: Data Table et tests finaux
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Warehouse Overview */}
+      <WarehouseOverview warehouses={warehousesWithStats} />
     </div>
   );
 }
