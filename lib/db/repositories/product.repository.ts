@@ -48,13 +48,7 @@ export class ProductRepository extends BaseRepository<Product> {
         },
         stock: {
           include: {
-            warehouse: {
-              select: {
-                id: true,
-                name: true,
-                code: true,
-              },
-            },
+            warehouse: true,
           },
         },
       },
