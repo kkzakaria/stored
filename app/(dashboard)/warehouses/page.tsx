@@ -26,33 +26,85 @@ async function WarehousesContent({ searchParams }: PageProps) {
   const search = params.search || "";
   const activeOnly = params.activeOnly !== "false";
 
-  // Build filter conditions
-  const where: Record<string, unknown> = {};
+  // Get current user with warehouse access
+  const currentUser = session?.user?.id
+    ? await userRepository.findById(session.user.id)
+    : null;
 
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { code: { contains: search, mode: "insensitive" } },
-    ];
-  }
+  // Determine accessible warehouses based on role
+  const isAdmin = currentUser?.role === "ADMINISTRATOR";
+  const isVisitorAdmin = currentUser?.role === "VISITOR_ADMIN";
+  const hasGlobalAccess = isAdmin || isVisitorAdmin;
 
-  if (activeOnly) {
-    where.active = true;
-  }
+  // Get warehouses (all for admins, assigned for others)
+  let warehouses: Awaited<ReturnType<typeof warehouseRepository.findMany>>;
+  if (hasGlobalAccess) {
+    // Build filter conditions for global access
+    const where: Record<string, unknown> = {};
 
-  // Fetch warehouses with stats
-  const warehouses = await warehouseRepository.findMany({
-    where,
-    include: {
-      _count: {
-        select: {
-          stock: true,
-          movementsFrom: true,
-          movementsTo: true,
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { code: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    if (activeOnly) {
+      where.active = true;
+    }
+
+    warehouses = await warehouseRepository.findMany({
+      where,
+      include: {
+        _count: {
+          select: {
+            stock: true,
+            movementsFrom: true,
+            movementsTo: true,
+          },
         },
       },
-    },
-  });
+    });
+  } else if (currentUser) {
+    // Get user's warehouse access
+    const userAccess = await warehouseRepository.getUserWarehouses(currentUser.id);
+    const accessibleWarehouseIds = userAccess.map(wa => wa.warehouseId);
+
+    // Build filter conditions for limited access
+    const where: Record<string, unknown> = {
+      id: { in: accessibleWarehouseIds },
+    };
+
+    if (search) {
+      where.AND = [
+        {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { code: { contains: search, mode: "insensitive" } },
+          ],
+        },
+      ];
+    }
+
+    if (activeOnly) {
+      where.active = true;
+    }
+
+    warehouses = await warehouseRepository.findMany({
+      where,
+      include: {
+        _count: {
+          select: {
+            stock: true,
+            movementsFrom: true,
+            movementsTo: true,
+          },
+        },
+      },
+    });
+  } else {
+    warehouses = [];
+  }
 
   // Fetch detailed stats for each warehouse
   const warehouseStatsMap = new Map();
@@ -63,14 +115,8 @@ async function WarehousesContent({ searchParams }: PageProps) {
     })
   );
 
-  // Fetch user from database
-  let canEdit = false;
-  if (session?.user?.id) {
-    const user = await userRepository.findById(session.user.id);
-    if (user) {
-      canEdit = canWrite(user, "warehouses");
-    }
-  }
+  // Check if user can edit
+  const canEdit = currentUser ? canWrite(currentUser, "warehouses") : false;
 
   return (
     <div className="space-y-6">
