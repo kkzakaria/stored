@@ -15,6 +15,7 @@ const baseMovementFields = {
   productId: z.string().uuid("Invalid product ID"),
   variantId: z.string().uuid("Invalid variant ID").nullable().optional(),
   quantity: z.number().int().positive("Quantity must be positive"),
+  reference: z.string().max(100, "Reference must not exceed 100 characters").optional(),
   notes: z.string().max(1000, "Notes must not exceed 1000 characters").optional(),
 };
 
