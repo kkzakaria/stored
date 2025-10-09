@@ -30,6 +30,7 @@ import {
   ArrowRightLeft,
   FolderTree,
   Users,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -71,6 +72,12 @@ const navItems: NavItem[] = [
     permission: "categories:read",
   },
   {
+    title: "Rapports",
+    href: ROUTES.REPORTS,
+    icon: FileText,
+    permission: "reports:read",
+  },
+  {
     title: "Utilisateurs",
     href: ROUTES.USERS,
     icon: Users,
@@ -91,7 +98,7 @@ export function AppSidebar() {
 
     return navItems.filter((item) => {
       if (!item.permission) return true;
-      return hasPermission(user, item.permission as "products:read" | "warehouses:read" | "movements:read" | "categories:read" | "admin:access");
+      return hasPermission(user, item.permission as "products:read" | "warehouses:read" | "movements:read" | "categories:read" | "reports:read" | "admin:access");
     });
   }, [user]);
 
