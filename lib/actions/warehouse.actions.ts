@@ -7,6 +7,9 @@
 
 "use server";
 
+// Force Node.js runtime for Prisma database operations
+export const runtime = 'nodejs';
+
 import { revalidatePath } from "next/cache";
 import { authActionClient, PermissionError, returnValidationErrors } from "./safe-action";
 import {
@@ -64,12 +67,18 @@ export const updateWarehouse = authActionClient
   .metadata({ actionName: "updateWarehouse" })
   .schema(updateWarehouseSchema)
   .action(async ({ parsedInput, ctx }) => {
+    console.log("🔵 UPDATE ACTION START", { id: parsedInput.id, userRole: ctx.userRole });
+
     checkWarehousePermissions(ctx.userRole);
+    console.log("🟢 Permission check passed");
 
     const { id, ...updateData } = parsedInput;
+    console.log("🟡 About to check if warehouse exists");
 
     // Check if warehouse exists
     const existing = await warehouseRepository.findById(id);
+    console.log("🟣 Warehouse found:", existing?.name);
+
     if (!existing) {
       returnValidationErrors(updateWarehouseSchema, {
         id: {
@@ -94,6 +103,7 @@ export const updateWarehouse = authActionClient
 
     revalidatePath("/warehouses");
     revalidatePath(`/warehouses/${id}`);
+
     return { warehouse };
   });
 

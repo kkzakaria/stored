@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/db/client";
+import { UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export const auth = betterAuth({
@@ -28,6 +29,21 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 60 * 5, // 5 minutes
+    },
+  },
+
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: UserRole.USER,
+      },
+      active: {
+        type: "boolean",
+        required: true,
+        defaultValue: true,
+      },
     },
   },
 

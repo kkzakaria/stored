@@ -4,7 +4,7 @@
  */
 export interface IBaseRepository<T> {
   findById(id: string, include?: object): Promise<T | null>;
-  findMany(where?: object, include?: object): Promise<T[]>;
+  findMany(params?: object): Promise<T[]>;
   findFirst(where: object, include?: object): Promise<T | null>;
   create(data: object): Promise<T>;
   update(id: string, data: object): Promise<T>;
@@ -44,11 +44,8 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   /**
    * Find multiple records matching criteria
    */
-  async findMany(where?: object, include?: object): Promise<T[]> {
-    return this.model.findMany({
-      where,
-      include,
-    });
+  async findMany(params?: object): Promise<T[]> {
+    return this.model.findMany(params);
   }
 
   /**

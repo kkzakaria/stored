@@ -53,8 +53,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const lowStockOnly = params.lowStockOnly === "true";
 
   // Fetch products based on filters
-  let products = await productRepository.findMany(
-    {
+  let products = await productRepository.findMany({
+    where: {
       active: activeOnly ? true : undefined,
       ...(categoryId ? { categoryId } : {}),
       ...(search
@@ -67,7 +67,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           }
         : {}),
     },
-    {
+    include: {
       category: true,
       stock: {
         include: {
@@ -81,8 +81,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           stock: true,
         },
       },
-    }
-  );
+    },
+  });
 
   // Filter for low stock if requested (client-side filter since it's a computed value)
   if (lowStockOnly) {
