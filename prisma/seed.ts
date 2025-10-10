@@ -1,4 +1,5 @@
 import { PrismaClient, UserRole } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -6,20 +7,41 @@ async function main() {
   console.log("🌱 Starting database seed...");
 
   // ============================================
-  // 1. Create Admin User
+  // 1. Create Admin User with Better Auth
   // ============================================
   console.log("👤 Creating admin user...");
+  const hashedPassword = await bcrypt.hash("password123", 10);
+
   const admin = await prisma.user.upsert({
     where: { email: "admin@example.com" },
     update: {},
     create: {
       email: "admin@example.com",
+      emailVerified: true,
       name: "Administrateur",
       role: UserRole.ADMINISTRATOR,
       active: true,
     },
   });
-  console.log(`✅ Admin user created: ${admin.email}`);
+
+  // Create Better Auth account with password
+  await prisma.account.upsert({
+    where: {
+      providerId_accountId: {
+        providerId: "credential",
+        accountId: admin.email,
+      },
+    },
+    update: {},
+    create: {
+      userId: admin.id,
+      accountId: admin.email,
+      providerId: "credential",
+      password: hashedPassword,
+    },
+  });
+
+  console.log(`✅ Admin user created: ${admin.email} (password: password123)`);
 
   // ============================================
   // 2. Create Categories (Hierarchical)
@@ -293,7 +315,7 @@ async function main() {
   console.log(`   📊 Stock entries: 4`);
   console.log(`\n🔐 Login credentials:`);
   console.log(`   Email: admin@example.com`);
-  console.log(`   (Password will be set up with Better Auth in Phase 3)`);
+  console.log(`   Password: password123`);
 }
 
 main()

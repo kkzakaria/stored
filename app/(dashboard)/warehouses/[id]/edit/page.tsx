@@ -14,6 +14,9 @@ interface PageProps {
   }>;
 }
 
+// Force Node.js runtime for Prisma database queries
+export const runtime = 'nodejs';
+
 async function WarehouseEditContent({ params }: PageProps) {
   const { id } = await params;
 

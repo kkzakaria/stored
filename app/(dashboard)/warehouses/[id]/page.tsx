@@ -40,7 +40,7 @@ async function WarehouseDetailContent({ params }: PageProps) {
   const stats = await warehouseRepository.getWarehouseStats(id);
 
   // Fetch all users for access management
-  const allUsers = await userRepository.findMany({ active: true });
+  const allUsers = await userRepository.findMany({ where: { active: true } });
 
   // Fetch user and check permissions
   let canEdit = false;

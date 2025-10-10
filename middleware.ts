@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "@/lib/auth/config";
+import { getCookieCache } from "better-auth/cookies";
 
 // Routes that don't require authentication
 const publicRoutes = [
@@ -33,22 +33,13 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isProtectedRoute) {
-    try {
-      const session = await auth.api.getSession({
-        headers: request.headers,
-      });
+    // Check session from cookie cache (Edge-compatible, no Prisma call)
+    // Full session validation happens in Server Components and Server Actions
+    const session = await getCookieCache(request);
 
-      if (!session) {
-        const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("from", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-
-      // Additional user validation can be done here with Prisma
-      // For now, we only check if session exists
-    } catch (error) {
-      console.error("Middleware auth error:", error);
+    if (!session) {
       const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
     }
   }

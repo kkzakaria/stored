@@ -20,6 +20,9 @@ interface ProductsPageProps {
   }>;
 }
 
+// Force Node.js runtime for Prisma database queries
+export const runtime = 'nodejs';
+
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const session = await auth.api.getSession({
     headers: await (async () => {
@@ -32,7 +35,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   // Get user permissions
   const user = session?.user?.id
     ? await userRepository.findById(session.user.id, {
-        warehouses: {
+        warehouseAccess: {
           select: {
             warehouseId: true,
             canWrite: true,

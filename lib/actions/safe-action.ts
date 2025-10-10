@@ -78,6 +78,8 @@ export const actionClient = createSafeActionClient({
  * Automatically provides session and user data to action context
  */
 export const authActionClient = actionClient.use(async ({ next }) => {
+  console.log("🔷 Auth middleware start");
+
   // Get session from Better Auth
   const session = await auth.api.getSession({
     headers: await (async () => {
@@ -85,6 +87,7 @@ export const authActionClient = actionClient.use(async ({ next }) => {
       return headers();
     })(),
   });
+  console.log("🔷 Session retrieved:", session ? "✓" : "✗");
 
   // Check if user is authenticated
   if (!session?.user || !session.session) {
@@ -96,11 +99,13 @@ export const authActionClient = actionClient.use(async ({ next }) => {
     where: { id: session.user.id },
     select: { id: true, email: true, role: true, active: true },
   });
+  console.log("🔷 User found:", user?.email, "Role:", user?.role);
 
   if (!user || !user.active) {
     throw new PermissionError("User not found or inactive");
   }
 
+  console.log("🔷 Auth middleware calling next()");
   // Pass session data to action context
   return next({
     ctx: {
