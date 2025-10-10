@@ -81,14 +81,14 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
           <div className="relative">
             <Tag className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground z-10" />
             <Select
-              value={filters.categoryId}
-              onValueChange={(value) => setFilters({ categoryId: value })}
+              value={filters.categoryId || "all"}
+              onValueChange={(value) => setFilters({ categoryId: value === "all" ? "" : value })}
             >
               <SelectTrigger id="category" className="pl-9">
                 <SelectValue placeholder="Toutes les catégories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toutes les catégories</SelectItem>
+                <SelectItem value="all">Toutes les catégories</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}

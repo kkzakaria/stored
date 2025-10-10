@@ -47,7 +47,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const canEditProducts = user ? canWrite(user, "products") : false;
 
   // Get all active categories for filter
-  const categories = await categoryRepository.findMany({ active: true });
+  const categories = await categoryRepository.findMany({ where: { active: true } });
 
   // Build filter conditions
   const search = params.search || "";

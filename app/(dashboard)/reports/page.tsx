@@ -88,7 +88,7 @@ async function ReportsContent({
       : warehouseIds;
 
   // Get all categories for filter
-  const categories = await categoryRepository.findMany();
+  const categories = await categoryRepository.findMany({});
 
   // Fetch stock data
   const allStocks = await Promise.all(

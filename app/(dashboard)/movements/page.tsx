@@ -119,8 +119,8 @@ async function MovementsContent({
   // Fetch data in parallel
   const [paginatedData, warehouses, products] = await Promise.all([
     movementRepository.findPaginated(page, pageSize, filters),
-    warehouseRepository.findMany({ active: true }),
-    productRepository.findMany({ active: true }),
+    warehouseRepository.findMany({ where: { active: true } }),
+    productRepository.findMany({ where: { active: true } }),
   ]);
 
   // If warehouseId filter is set, manually filter movements
