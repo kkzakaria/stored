@@ -62,8 +62,8 @@ export function UserFilters() {
         <div className="space-y-2">
           <Label htmlFor="role-filter">Role</Label>
           <Select
-            value={filters.role}
-            onValueChange={(value) => setFilters({ role: value })}
+            value={filters.role || "all"}
+            onValueChange={(value) => setFilters({ role: value === "all" ? "" : value })}
           >
             <SelectTrigger id="role-filter">
               <SelectValue placeholder="All roles">
@@ -86,7 +86,7 @@ export function UserFilters() {
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All roles</SelectItem>
+              <SelectItem value="all">All roles</SelectItem>
               {roles.map((role) => {
                 const roleInfo = getRoleInfo(role);
                 const Icon = getRoleIcon(role);

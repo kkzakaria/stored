@@ -17,6 +17,13 @@ export class StockRepository extends BaseRepository<Stock> {
     return prisma.stock.findMany({
       where: { warehouseId },
       include: {
+        warehouse: {
+          select: {
+            id: true,
+            code: true,
+            name: true,
+          },
+        },
         product: {
           select: {
             id: true,
