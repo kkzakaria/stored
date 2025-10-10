@@ -7,9 +7,6 @@
 
 "use server";
 
-// Force Node.js runtime for Prisma database operations
-export const runtime = 'nodejs';
-
 import { revalidatePath } from "next/cache";
 import { authActionClient, PermissionError, returnValidationErrors } from "./safe-action";
 import {
